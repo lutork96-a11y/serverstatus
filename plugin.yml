@@ -1,0 +1,5 @@
+name: ServerStatusWeb
+version: 1.0
+main: de.serverstatus.ServerStatusWeb
+api-version: "26.1"
+description: Zeigt Spieleranzahl und Namen auf einer Webseite

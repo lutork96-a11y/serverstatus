@@ -1,0 +1,4 @@
+# Port der Webseite (muss frei sein und ggf. im Router/bei deinem Hoster freigegeben werden)
+port: 8080
+# Titel der Webseite
+title: "Mein Minecraft-Server"

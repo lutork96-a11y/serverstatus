@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%TITLE%</title>
+<style>
+  :root { --bg:#12151c; --card:#1c212c; --text:#e8ecf3; --muted:#8a94a8; --green:#4ade80; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:var(--text); padding:24px 16px; }
+  .wrap { max-width:640px; margin:0 auto; }
+  h1 { font-size:1.5rem; margin:0 0 4px; }
+  .status { color:var(--muted); margin-bottom:20px; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--muted); margin-right:6px; }
+  .dot.on { background:var(--green); }
+  .count { background:var(--card); border-radius:14px; padding:18px; font-size:2rem; font-weight:700; text-align:center; margin-bottom:16px; }
+  .count small { display:block; font-size:.85rem; font-weight:400; color:var(--muted); margin-top:4px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
+  .p { background:var(--card); border-radius:12px; padding:12px; display:flex; align-items:center; gap:10px; overflow:hidden; }
+  .p img { width:36px; height:36px; border-radius:6px; image-rendering:pixelated; }
+  .p span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .empty { color:var(--muted); text-align:center; padding:20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>%TITLE%</h1>
+  <div class="status"><span id="dot" class="dot"></span><span id="st">Lade…</span></div>
+  <div class="count"><span id="n">–</span> / <span id="max">–</span><small>Spieler online</small></div>
+  <div id="list" class="grid"></div>
+</div>
+<script>
+async function load() {
+  try {
+    const r = await fetch('/api/players', {cache:'no-store'});
+    const d = await r.json();
+    document.getElementById('n').textContent = d.online;
+    document.getElementById('max').textContent = d.max;
+    document.getElementById('dot').className = 'dot on';
+    document.getElementById('st').textContent = 'Server online · TPS ' + d.tps;
+    const list = document.getElementById('list');
+    list.innerHTML = '';
+    if (!d.players.length) {
+      list.innerHTML = '<div class="empty" style="grid-column:1/-1">Gerade ist niemand online.</div>';
+    }
+    d.players.forEach(p => {
+      const el = document.createElement('div');
+      el.className = 'p';
+      const img = document.createElement('img');
+      img.src = 'https://mc-heads.net/avatar/' + encodeURIComponent(p.name) + '/72';
+      img.alt = '';
+      const name = document.createElement('span');
+      name.textContent = p.name;
+      el.append(img, name);
+      list.appendChild(el);
+    });
+  } catch (e) {
+    document.getElementById('dot').className = 'dot';
+    document.getElementById('st').textContent = 'Server nicht erreichbar';
+  }
+}
+load();
+setInterval(load, 10000);
+</script>
+</body>
+</html>
